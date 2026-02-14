@@ -326,6 +326,8 @@ const Navbar = () => {
                                             </ul>
                                         </div>
                                     ))}
+
+                                    <p><NavLink to={'/report'} onClick={() => setMenu(false)}>See All Reports</NavLink></p>
                                 </div>
                             </div>
                         </div>

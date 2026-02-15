@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { base_url } from "../URL";
 import toast from 'react-hot-toast';
 import { useParams } from "react-router-dom";
+import Footer from "./Footer";
 
 const FilteredReportType = () => {
 
@@ -144,6 +145,7 @@ const FilteredReportType = () => {
     }, []);
 
     return (
+        <>
         <div className="bg-gray-color">
             <div className=" h-120 flex items-center w-full bg-gray-300"
                 style={{
@@ -261,6 +263,8 @@ const FilteredReportType = () => {
                 {/* <RelevantReports /> */}
             </div>
         </div>
+        <Footer/>
+        </>
     );
 };
 export default FilteredReportType;

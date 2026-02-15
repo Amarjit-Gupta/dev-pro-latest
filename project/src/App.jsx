@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import ReportingList from "./components/ReportingList";
 import MultiStepForm from "./admin/addData/MultiStepForm";
 import Login from "./auth/Login";
@@ -15,10 +14,30 @@ import { Toaster } from 'react-hot-toast';
 import FilteredIndustry from "./components/FilteredIndustry";
 import FilteredReportType from "./components/FilteredReportType";
 import FilteredUseCases from "./components/FilteredUseCases";
+import Error from "./components/Error";
+import { useEffect, useState } from "react";
 
 const App = () => {
+
+  const [mainLoader, setMainLoader] = useState(true);
+
+  useEffect(() => {
+    let timeOut = setTimeout(() => {
+      setMainLoader(false);
+    }, 1000);
+    return () => {
+      clearTimeout(timeOut);
+    }
+  }, []);
+
   return (
     <div>
+      {mainLoader && (
+        <div className="h-screen bg-surface w-screen fixed top-0 left-0 z-50 flex justify-center items-center">
+          <div className="h-10 w-10 border-4 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+
       <Toaster position="top-right" reverseOrder={false} />
       <BrowserRouter>
         <Navbar />
@@ -38,9 +57,9 @@ const App = () => {
             <Route path="/single-report/:id" element={<SingleReport />} />
           </Route>
           <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Error />} />
         </Routes>
       </BrowserRouter>
-      <Footer />
     </div>
   );
 };

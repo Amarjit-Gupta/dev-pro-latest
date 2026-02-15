@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { base_url } from "../URL";
 import Breadcrumbs from "./BreadCrumbs";
 import toast from 'react-hot-toast';
+import Footer from "./Footer";
 
 const ReportingList = () => {
 
@@ -115,6 +116,7 @@ const ReportingList = () => {
     }, [selectedFilters]);
 
     return (
+        <>
         <div className="bg-gray-color">
             <div className=" h-120 flex items-center w-full bg-gray-300 reportlisting-bg-img">
                 <div className=" w-80 sm:w-140 xl:w-285 m-auto flex gap-5 justify-center">
@@ -217,6 +219,8 @@ const ReportingList = () => {
                 {/* <RelevantReports /> */}
             </div>
         </div>
+        <Footer/>
+        </>
     );
 };
 export default ReportingList;

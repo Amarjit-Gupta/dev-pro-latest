@@ -11,7 +11,7 @@ const StepIndicator = ({  step, setStep }) => {
 
                 return (
                     <div key={s} className="flex-1 flex items-center relative">
-                        <div onClick={() => isCompleted || isActive ? setStep(s) : null} className={`w-5 h-5 ml-1 rounded-full z-10 flex-shrink-0 cursor-pointer transition-all duration-500 ease-in-out hover:scale-125 ${isActive ? "bg-brand scale-110" : isCompleted ? "bg-brand" : "bg-gray-300 hover:bg-brand/60"}`}></div>
+                        <div onClick={() => isCompleted || isActive ? setStep(s) : null} className={`w-5 h-5 ml-1 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 ease-in-out hover:scale-125 ${isActive ? "bg-brand scale-110" : isCompleted ? "bg-brand" : "bg-gray-300 hover:bg-brand/60"}`}></div>
 
                         {/* line */}
                         <div className="flex-1 h-1 mx-2 bg-gray-300 rounded overflow-hidden relative">

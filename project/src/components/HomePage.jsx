@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { curatedData, howThisHelpsYou, textContainerData } from './Data';
 import WhyChooseUs from './WhyChooseUs';
 import HomePageCards from './HomePageCards';
+import Footer from './Footer';
 
 const HomePage = () => {
 
@@ -162,6 +163,7 @@ const HomePage = () => {
                     })
                 }
             </div>
+            <Footer/>
         </>
     );
 };

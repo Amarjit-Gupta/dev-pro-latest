@@ -37,8 +37,6 @@ const ReviewStep = ({
   return (
     <>
       <h1 className="text-24 font-bold mb-4">ReviewStep</h1>
-
-      {/* STEP 1 */}
       <div className="mb-3">
         <button
           onClick={() => toggleStep(1)}
@@ -47,7 +45,6 @@ const ReviewStep = ({
           <span>Step1</span>
           <span>{openStep === 1 ? "−" : "+"}</span>
         </button>
-
         <div className={`transition-all duration-300 overflow-hidden ${openStep === 1 ? "h-auto p-3" : "h-0 px-3"}`}>
           <p><span className="font-medium">Title:</span> {reportTitle}</p>
           <p><span className="font-medium">Subtitle:</span> {subTitle}</p>
@@ -62,8 +59,6 @@ const ReviewStep = ({
           <p><span className="font-medium">Coverage To:</span> {coveragePeriodTo}</p>
         </div>
       </div>
-
-      {/* STEP 2 */}
       <div className="mb-3 rounded">
         <button
           onClick={() => toggleStep(2)}
@@ -72,14 +67,11 @@ const ReviewStep = ({
           <span>Step2</span>
           <span>{openStep === 2 ? "−" : "+"}</span>
         </button>
-
         <div className={`transition-all duration-300 overflow-hidden ${openStep === 2 ? "h-auto p-3" : "h-0 px-3"}`}>
           <p><span className="font-medium">Report Covers:</span> {reportCovers?.join(", ")}</p>
           <p><span className="font-medium">Report Supports:</span> {reportSupports?.join(", ")}</p>
         </div>
       </div>
-
-      {/* STEP 3 */}
       <div className="mb-3 rounded">
         <button
           onClick={() => toggleStep(3)}
@@ -88,7 +80,6 @@ const ReviewStep = ({
           <span>Step3</span>
           <span>{openStep === 3 ? "−" : "+"}</span>
         </button>
-
         <div className={`transition-all duration-300 overflow-hidden ${openStep === 3 ? "h-auto p-3" : "h-0 px-3"}`}>
           <p><span className="font-medium">Report Files:</span> {availableReports || uploadedFile?.name}</p>
           <p><span className="font-medium">Sample PDF:</span> {samplePDF?.name}</p>
@@ -96,8 +87,6 @@ const ReviewStep = ({
           <p><span className="font-medium">Charts:</span> {charts?.name}</p>
         </div>
       </div>
-
-      {/* STEP 5 */}
       <div className="mb-3 rounded">
         <button
           onClick={() => toggleStep(5)}
@@ -106,13 +95,10 @@ const ReviewStep = ({
           <span>Step5</span>
           <span>{openStep === 5 ? "−" : "+"}</span>
         </button>
-
         <div className={`transition-all duration-300 overflow-hidden ${openStep === 5 ? "h-auto p-3" : "h-0 px-3"}`}>
           <p><span className="font-medium">Full Report Price:</span> {reportPrice}</p>
         </div>
       </div>
-
-      {/* STEP 6 */}
       <div className="mb-3 rounded">
         <button
           onClick={() => toggleStep(6)}
@@ -121,7 +107,6 @@ const ReviewStep = ({
           <span>Step6</span>
           <span>{openStep === 6 ? "−" : "+"}</span>
         </button>
-
         <div className={`transition-all duration-300 overflow-hidden ${openStep === 6 ? "h-auto p-3" : "h-0 px-3"}`}>
           <p><span className="font-medium">Status:</span> {status}</p>
           <p><span className="font-medium">Feature Homepage:</span> {fHomepage ? "True" : "False"}</p>

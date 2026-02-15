@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
 const MultiSelectDropdown = ({ label, options, value, onChange }) => {
+
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const dropdownRef = useRef(null);
 
-  // Outside click
   useEffect(() => {
     const handleClick = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -32,8 +32,6 @@ const MultiSelectDropdown = ({ label, options, value, onChange }) => {
   return (
     <div className="w-full mb-5" ref={dropdownRef}>
       <label className="text-15 font-medium text-primary">{label}</label>
-
-      {/* Dropdown Button */}
       <div
         onClick={() => setOpen(!open)}
         className="border border-gray-200 px-0.5 py-2 mt-1 cursor-pointer flex justify-between items-center bg-white rounded"
@@ -41,7 +39,6 @@ const MultiSelectDropdown = ({ label, options, value, onChange }) => {
         <span className="text-13 text-primary truncate">
           {value.length ? value.join(", ") : "Select..."}
         </span>
-
         <span
           className={`transition-transform duration-200 ${
             open ? "rotate-180" : "rotate-0"
@@ -50,11 +47,8 @@ const MultiSelectDropdown = ({ label, options, value, onChange }) => {
           <IoIosArrowDown />
         </span>
       </div>
-
-      {/* Dropdown box */}
       {open && (
         <div className="border border-gray-200 border-t-0 p-1 bg-white rounded-b">
-          {/* Search */}
           <input
             type="text"
             placeholder="Search here..."
@@ -62,8 +56,6 @@ const MultiSelectDropdown = ({ label, options, value, onChange }) => {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full border border-gray-200 px-2 py-1 mb-2 rounded text-15 outline-none focus:ring-1 focus:ring-black"
           />
-
-          {/* Options */}
           <div className="h-auto overflow-y-auto space-y-1">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((item) => (

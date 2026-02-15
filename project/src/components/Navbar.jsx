@@ -14,6 +14,8 @@ const Navbar = () => {
     const [menu, setMenu] = useState(false);
     const [activeMegaMenu, setActiveMegaMenu] = useState(null);
     const [openPopup, setOpenPopup] = useState(false);
+
+    const [logoutLoader,setLogoutLoader] = useState(false);
     
     const navigate = useNavigate();
 
@@ -113,6 +115,7 @@ const Navbar = () => {
     const handleLogout = async () => {
         // setOpenPopup(false);
         try {
+            setLogoutLoader(true);
             const result = await fetch(`${base_url}/logout`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -133,6 +136,8 @@ const Navbar = () => {
         } catch (err) {
             toast.error(err.message);
             console.error("Something went wrong:", err.message);
+        }finally{
+            setLogoutLoader(false);
         }
     }
 
@@ -142,7 +147,7 @@ const Navbar = () => {
 
     return (
         <>
-            <div className="border bg-surface h-21 flex justify-around items-center sticky top-0 left-0 z-50">
+            <div className="bg-surface h-21 flex justify-around items-center sticky top-0 left-0 z-10">
                 <div className="w-55 h-11 hidden sm:block"><img src={logo} alt="logo" className='h-full w-full' /></div>
                 <div className="w-11 h-11 sm:hidden"><img src={logoSmall} alt="logo" className='h-full w-full' /></div>
                 <div className="lg:hidden border">

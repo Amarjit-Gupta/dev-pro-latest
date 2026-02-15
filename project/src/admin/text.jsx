@@ -1,4 +1,5 @@
-// for test  (8644)
+
+// // // for test  (8644)
 import { useEffect, useState } from "react";
 import FormStep1 from "./steps/FormStep1";
 import FormStep2 from "./steps/FormStep2";
@@ -8,18 +9,18 @@ import FormStep5 from "./steps/FormStep5";
 import ReviewStep from "./steps/ReviewStep";
 import StepIndicator from "./steps/StepIndicator";
 import FormStep6 from "./steps/FormStep6";
+
 import { useNavigate, useParams } from "react-router-dom";
 import { base_url } from "../../URL";
-import toast from 'react-hot-toast';
+// import Breadcrumbs from "../../components/BreadCrumbs";
 
-const FORM_STEPS = 6;
-const TOTAL_STEPS = 7;
+const FORM_STEPS = 6;  // Actual form steps
+const TOTAL_STEPS = 7;  // Including review step
 
 const MultiStepForm = () => {
-
     const [formStep, setFormStep] = useState(1);
     const [error, setError] = useState(false);
-    const [periodError, setPeriodError] = useState("");
+    const [periodError, setPeriodError] = useState(""); // From >= To error
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [draftId, setDraftId] = useState(null);
     const [selectedOption, setSelectedOption] = useState("");
@@ -83,8 +84,9 @@ const MultiStepForm = () => {
 
     let param = useParams();
     let index = param.id;
-
     const navigate = useNavigate();
+
+    console.log("index", index);
 
     const handleRadioChange = async (e) => {
         const value = e.target.value;
@@ -96,19 +98,14 @@ const MultiStepForm = () => {
                     method: "GET",
                     credentials: "include"
                 });
-
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-
                 const data = await res.json();
-
                 if (data) {
+
+                    console.log("reports generating id................", data?.reports);
                     setReportDirectory(data?.reports);
                 }
             } catch (error) {
                 console.error("API Error:", error);
-                toast.error("Failed to load reports directory");
                 setError(true);
             }
         }
@@ -122,12 +119,10 @@ const MultiStepForm = () => {
                 credentials: "include"
             });
 
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+            if (!res.ok) throw new Error("Failed to fetch report data");
 
             const rData = await res.json();
-
+            console.log("getselectedReportIdData:", rData);
             if (rData) {
                 setVersionNum(rData?.version_number);
                 setversionID(rData?.version_id || "");
@@ -136,19 +131,22 @@ const MultiStepForm = () => {
             }
         } catch (err) {
             console.error("Report API Error:", err);
-            toast.error("Failed to load report data");
             setError(true);
         }
     };
 
     const saveStepData = async ({ step, payload }) => {
         try {
+            // Check if either draftId or index exists
             const hasExistingId = draftId || index;
+            console.log("hasExistingId: ", hasExistingId, "draftId:", draftId, "index:", index);
 
             const url = hasExistingId
                 ? `${base_url}/reports/${draftId || index}/step${step}`
                 : `${base_url}/reports/step${step}/save-draft`;
             const method = hasExistingId ? "PUT" : "POST";
+
+            console.log("Calling URL:", url, "with method:", method);
 
             const res = await fetch(url, {
                 method,
@@ -158,19 +156,20 @@ const MultiStepForm = () => {
             });
 
             if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
+                console.log("Failed to save step data");
             }
 
             const data = await res.json();
+            console.log("postData: ", data);
 
+            // If this was a POST request (new draft) and we got a report_id, set it
             if (!hasExistingId && data?.report_id) {
                 setDraftId(data.report_id);
             }
-            return { success: true, data };
 
+            return { success: true, data };
         } catch (err) {
             console.error("Save Step Error:", err);
-            toast.error(`Failed to save step ${step}`);
             throw err;
         }
     };
@@ -178,6 +177,8 @@ const MultiStepForm = () => {
     const handleNext = async () => {
         try {
             setIsSubmitting(true);
+
+            // Step 1 Validation
             if (formStep === 1) {
                 if (!reportTitle || !subTitle || !industry || !subIndustry || regions.length === 0 || country.length === 0 || !reportType || !useCases || !publishDate || !coveragePeriodFrom || !coveragePeriodTo) {
                     setError(true);
@@ -209,6 +210,7 @@ const MultiStepForm = () => {
                 await saveStepData({ step: 1, payload });
             }
 
+            // Step 2 Validation
             if (formStep === 2) {
                 if (reportCovers.length === 0 || reportSupports.length === 0) {
                     setError(true);
@@ -224,8 +226,50 @@ const MultiStepForm = () => {
                 await saveStepData({ step: 2, payload });
             }
 
+            // Step 3 Validation
+            // if (formStep === 3) {
+
+            //     const isEditMode = Boolean(index);
+
+            //     // New report me mandatory
+            //     if (!isEditMode) {
+            //         if (!availableReports && !uploadedFile) {
+            //             setError(true);
+            //             return;
+            //         }
+            //         if (!samplePDF) {
+            //             setError(true);
+            //             return;
+            //         }
+            //     }
+
+            //     // File select hui hai to type check hoga (edit + new dono me)
+            //     if (uploadedFile && uploadedFile.type !== "application/pdf") {
+            //         setError(true);
+            //         return;
+            //     }
+
+            //     if (samplePDF && samplePDF.type !== "application/pdf") {
+            //         setError(true);
+            //         return;
+            //     }
+
+            //     if (charts && charts.type !== "application/pdf") {
+            //         setError(true);
+            //         return;
+            //     }
+
+            //     if (image && image.type !== "image/webp") {
+            //         setError(true);
+            //         return;
+            //     }
+
+            //     setError(false);
             if (formStep === 3) {
+
                 const isEditMode = Boolean(index);
+
+                // EDIT MODE: koi file change hi nahi hui → API mat call karo
                 if (
                     isEditMode &&
                     !uploadedFile &&
@@ -237,6 +281,8 @@ const MultiStepForm = () => {
                     setFormStep(formStep + 1);
                     return;
                 }
+
+                // NEW REPORT: mandatory checks
                 if (!isEditMode) {
                     if (!availableReports && !uploadedFile) {
                         setError(true);
@@ -251,6 +297,8 @@ const MultiStepForm = () => {
                         return;
                     }
                 }
+
+                // File type validation (edit + new dono)
                 if (uploadedFile && uploadedFile.type !== "application/pdf") {
                     setError(true);
                     return;
@@ -273,12 +321,15 @@ const MultiStepForm = () => {
 
                 setError(false);
 
+
                 const formData = new FormData();
                 if (availableReports) formData.append("full_asset_id", availableReports);
                 if (uploadedFile) formData.append("full_pdf", uploadedFile);
                 if (samplePDF) formData.append("sample_pdf", samplePDF);
                 if (charts) formData.append("charts_pdf", charts);
                 if (image) formData.append("image_file", image);
+
+                console.log("formData.....????????????????", formData);
 
                 try {
                     const hasExistingId = draftId || index;
@@ -294,25 +345,26 @@ const MultiStepForm = () => {
                     );
 
                     const data = await res.json();
+                    console.log("step3: ", data);
 
                     if (!res.ok) {
-                        toast.error("Failed to upload files");
                         console.log("Upload failed");
                     }
-
-                    toast.success("Files uploaded successfully");
                 } catch (err) {
                     setError(true);
-                    toast.error("Failed to upload files");
                     return;
                 }
             }
 
+            // Step 4 Validation
             if (formStep === 4) {
                 // No validation needed for step 4
+                // we can add validation here if needed
             }
 
+            // Step 5 Validation
             if (formStep === 5) {
+                // Price validation (uncomment if needed)
                 // if (!reportPrice || isNaN(reportPrice) || Number(reportPrice) <= 0) {
                 //     setError(true);
                 //     return;
@@ -328,6 +380,7 @@ const MultiStepForm = () => {
                 await saveStepData({ step: 4, payload });
             }
 
+            // Step 6 Validation and Final Submit
             if (formStep === 6) {
                 if (!seoSlug.trim() || !seoTitle.trim() || !seoKeywords.trim() || !seoDescription.trim() || fHomepage === null) {
                     setError(true);
@@ -346,18 +399,22 @@ const MultiStepForm = () => {
 
                 await saveStepData({ step: 5, payload });
 
-                toast.success("Report published successfully!");
+                console.log("FINAL SUBMIT DONE");
+                alert("Report published successfully!");
+
+                // Redirect after successful submission
                 navigate('/all');
                 return;
             }
 
+            // Move to next step
             if (formStep < 6) {
                 setFormStep(formStep + 1);
             }
         } catch (err) {
             console.error("Handle Next Error:", err);
             setError(true);
-            toast.error("Error occurred. Please try again.");
+            alert("Error occurred. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -367,6 +424,7 @@ const MultiStepForm = () => {
         try {
             setIsSubmitting(true);
 
+            // For each step, save data without validation
             if (formStep === 1) {
                 const payload = {
                     title: reportTitle || "",
@@ -397,6 +455,8 @@ const MultiStepForm = () => {
                 if (charts) formData.append("charts_pdf", charts);
                 if (image) formData.append("image_file", image);
 
+                console.log("formData.....????????????????", [...formData]);
+
                 const hasExistingId = draftId || index;
                 const res = await fetch(
                     hasExistingId
@@ -410,13 +470,8 @@ const MultiStepForm = () => {
                 );
 
                 if (!res.ok) {
-                    toast.error("Failed to save draft");
-                    return;
+                    console.log("Failed to save draft");
                 }
-
-                const data = await res.json();
-               // toast.success("Draft saved successfully!");
-
             } else if (formStep === 5) {
                 const payload = {
                     amount_cents: Number(reportPrice) || 0,
@@ -435,11 +490,12 @@ const MultiStepForm = () => {
                 };
                 await saveStepData({ step: 5, payload });
             }
-            toast.success("Draft saved successfully!");
+
+            alert("Draft saved successfully!");
         } catch (err) {
             console.error("Save Draft Error:", err);
             setError(true);
-            toast.error("Failed to save draft. Please try again.");
+            alert("Failed to save draft. Please try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -456,18 +512,12 @@ const MultiStepForm = () => {
     const getIndustryData = async () => {
         try {
             let result = await fetch(`${base_url}/industries/main`);
-
-            if (!result.ok) {
-                throw new Error(`HTTP error! status: ${result.status}`);
-            }
-
             let data = await result.json();
             if (data) {
                 setGetIndustry(data?.industries || []);
             }
         } catch (err) {
             console.error("Error fetching industries:", err);
-            toast.error("Failed to load industries");
         }
     };
 
@@ -476,55 +526,38 @@ const MultiStepForm = () => {
         try {
             const url = `${base_url}/industries/sub?industry=${encodeURIComponent(industry)}`;
             const res = await fetch(url);
-
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
-
             const data = await res.json();
             if (data) {
                 setGetSubindustry(data?.sub_industries || []);
             }
         } catch (err) {
             console.log("Error fetching sub-industries:", err);
-            toast.error("Failed to load sub-industries");
         }
     };
 
     const getRegionsData = async () => {
         try {
             let result = await fetch(`${base_url}/regions`);
-
-            if (!result.ok) {
-                throw new Error(`HTTP error! status: ${result.status}`);
-            }
-
             let data = await result.json();
             if (data) {
                 setGetRegions(data?.regions || []);
             }
         } catch (err) {
             console.log("Error fetching regions:", err);
-            toast.error("Failed to load regions");
         }
     };
 
     const getReportData = async () => {
         try {
             let result = await fetch(`${base_url}/report-types`);
-
-            if (!result.ok) {
-                throw new Error(`HTTP error! status: ${result.status}`);
-            }
-
             let data = await result.json();
             if (data) {
                 setGetReportTypes(data?.report_types || []);
                 setGetUseCases(data?.use_cases || []);
             }
+            //////////////////////////////////////////////////////////////////////////////
         } catch (err) {
             console.log("Error fetching report types:", err);
-            toast.error("Failed to load report types");
         }
     };
 
@@ -538,9 +571,7 @@ const MultiStepForm = () => {
             const regionParam = regions.join(",");
             const url = `${base_url}/countries?region=${encodeURIComponent(regionParam)}`;
             const res = await fetch(url);
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+            if (!res.ok) throw new Error("Failed to fetch countries");
 
             const data = await res.json();
             if (data) {
@@ -548,29 +579,28 @@ const MultiStepForm = () => {
             }
         } catch (err) {
             console.error("Country API Error:", err);
-            toast.error("Failed to load countries");
         }
     };
 
     const getAvailableReportsData = async () => {
+        console.log("versionID.............: ", versionID);
+
         try {
             const res = await fetch(`${base_url}/report-assets/?report_version_id=${versionID}`, {
                 method: "GET",
                 credentials: "include"
             });
-
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+            if (!res.ok) throw new Error("Failed to fetch available reports");
 
             const fData = await res.json();
+
+            console.log("fdata....................", fData);
 
             if (fData) {
                 setGetAvailableReport(fData || []);
             }
         } catch (err) {
             console.log("Available Reports API Error:", err);
-            toast.error("Failed to load available reports");
         }
     };
 
@@ -586,6 +616,12 @@ const MultiStepForm = () => {
             getAvailableReportsData();
         }
     }, [versionID]);
+
+    // useEffect(() => {
+
+    //         getAvailableReportsData();
+
+    // }, []);
 
     useEffect(() => {
         if (industry) {
@@ -608,24 +644,24 @@ const MultiStepForm = () => {
         }
     }, [selectedReportId]);
 
-    // for edit
+    // for edit getdata
     const getReportDataForEdit = async () => {
         try {
             let result = await fetch(`${base_url}/reports/${index}/edit`, {
                 method: "GET",
                 credentials: "include"
             });
-
-            if (!result.ok) {
-                throw new Error(`HTTP error! status: ${result.status}`);
-            }
-
             let data = await result.json();
+            console.log("getd1", data);
 
+            // Set draftId from edit data if available
             if (data?.report_id) {
+
+                console.log("draftid.....................", data.report_id);
                 setDraftId(data.report_id);
             }
 
+            // Check step data according to your API response structure
             if (data?.step_data?.step1) {
                 let stp1 = data?.step_data?.step1;
                 setversionID(stp1?.version_id);
@@ -643,25 +679,34 @@ const MultiStepForm = () => {
             }
             if (data?.step_data?.step2) {
                 let stp2 = data?.step_data?.step2;
+                console.log("ste2", stp2);
                 setReportCovers(Array.isArray(stp2?.covers) ? stp2.covers : []);
                 setReportSupports(Array.isArray(stp2?.supports_decisions) ? stp2.supports_decisions : []);
             }
 
             if (data?.step_data?.step3) {
                 let stp3 = data?.step_data?.step3;
+                console.log("step3: ", stp3);
+                // Set existing files info if available
+                // Note: You might need to handle file URLs differently
+                // since you can't directly set File objects from API response
                 setAvailableReports(stp3?.full_asset_id || "");
+                // For files, you might want to store URLs or file names
                 // setUploadedFile(stp3?.full_pdf_url || null);
                 // setSamplePDF(stp3?.sample_pdf_url || null);
                 // setImage(stp3?.image_url || null);
                 // setCharts(stp3?.charts_pdf_url || null);
             }
 
+            // API might return step4 for price and step5 for SEO
             if (data?.step_data?.step4) {
                 let stp4 = data?.step_data?.step4;
+                console.log("step4: ", stp4);
                 setReportPrice(stp4?.amount_cents || "");
             }
             if (data?.step_data?.step5) {
                 let stp5 = data?.step_data?.step5;
+                console.log("step5: ", stp5);
                 setStatus(stp5?.status || "");
                 setFHomepage(stp5?.feature_homepage || false);
                 setSeoSlug(stp5?.seo_slug || "");
@@ -672,7 +717,6 @@ const MultiStepForm = () => {
         }
         catch (err) {
             console.log("Something went wrong...");
-            toast.error("Failed to load report data for editing");
         }
     }
 
@@ -682,12 +726,21 @@ const MultiStepForm = () => {
         }
     }, [index]);
 
+    console.log("selected report versionID:...........", versionID);
+
     return (
         <div className="bg-gray-100">
             <>
+
+                {/* breadcrumbs */}
+                {/* <div className="border w-80 sm:w-160 md:w-190 lg:w-230 m-auto py-2">
+                    <Breadcrumbs />
+                </div> */}
+                {/* steps */}
                 <div className="hidden lg:block">
                     <StepIndicator step={formStep} setStep={setFormStep} />
                 </div>
+
                 <div className="border border-gray-200 rounded w-80 sm:w-160 md:w-190 lg:w-230 m-auto p-2 bg-surface">
                     {formStep === 1 && (
                         <FormStep1
@@ -837,8 +890,10 @@ const MultiStepForm = () => {
                     )}
                 </div>
 
+                {/* Navigation Buttons */}
                 <div className="relative h-14 rounded w-230 m-auto my-4">
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
+                        {/* Back Button */}
                         {formStep >= 2 && formStep < 7 && (
                             <button
                                 className="border px-4 h-9 font-medium cursor-pointer hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -848,6 +903,8 @@ const MultiStepForm = () => {
                                 Back
                             </button>
                         )}
+
+                        {/* Save Draft Button */}
                         {formStep <= 6 && (
                             <button
                                 className="border px-4 h-9 font-medium cursor-pointer hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -857,6 +914,8 @@ const MultiStepForm = () => {
                                 {isSubmitting ? "Saving..." : "Save Draft"}
                             </button>
                         )}
+
+                        {/* Next Button (Steps 1-5) */}
                         {formStep <= 5 && (
                             <button
                                 className="border px-4 h-9 font-medium cursor-pointer hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
@@ -866,6 +925,8 @@ const MultiStepForm = () => {
                                 {isSubmitting ? "Processing..." : "Next"}
                             </button>
                         )}
+
+                        {/* Step 6 Buttons (Review and Publish) */}
                         {formStep === 6 && (
                             <>
                                 <button
@@ -885,6 +946,7 @@ const MultiStepForm = () => {
                             </>
                         )}
 
+                        {/* Step 7 Back Button */}
                         {formStep === 7 && (
                             <button
                                 className="border px-4 h-9 font-medium text-primary border-text-primary hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"

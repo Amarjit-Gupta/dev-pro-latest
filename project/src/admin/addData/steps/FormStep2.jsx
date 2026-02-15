@@ -2,8 +2,6 @@ const FormStep2 = (
     { reportCovers, setReportCovers, reportSupports, setReportSupports, error }
 ) => {
 
-    //  for checkbox1
-
     const handleChange = (value, checked) => {
         if (checked) {
             setReportCovers((prev) => [...prev, value]);
@@ -11,8 +9,6 @@ const FormStep2 = (
             setReportCovers((prev) => prev.filter((item) => item !== value));
         }
     };
-
-    //  for checkbox2
 
     const handleChange1 = (value, checked) => {
         if (checked) {
@@ -24,20 +20,19 @@ const FormStep2 = (
 
     const checkBox1 = ["Market & Demand", "Competitive Landscape", "Strategic Insights", "Pricing & Economics", "Trade & Supply Chain", "Innovation & Trends", "Geography", "Forecasting & Outlook", "Regulation & Compliance"];
 
-    const checkBox2 = ["Product & Portfolio Decisions", "Competitive Strategy", "Investment & Financial Planning", "Market Entry & Expansion", "Pricing & Commercial Strategy", "Supply Chain & Sourcing", "Risk & Feasibility Assessment", "Strategic Communication","Strategic Communication"];
+    const checkBox2 = ["Product & Portfolio Decisions", "Competitive Strategy", "Investment & Financial Planning", "Market Entry & Expansion", "Pricing & Commercial Strategy", "Supply Chain & Sourcing", "Risk & Feasibility Assessment", "Strategic Communication","Strategic Communication1"];
 
     return (
         <>
-            <div className=" w-full m-auto flex flex-col gap-5 my-2">
-                <div className="">
+            <div className="w-full m-auto flex flex-col gap-5 my-2">
+                <div>
                     <h1 className="text-24 font-medium text-primary">Scope & Decision Value</h1>
                     <p className="text-16 font-regular text-primary">Control report positioning & conversion copy</p>
                 </div>
-
-                <div className="">
+                <div>
                     <h1 className="text-20 font-medium text-primary">What this report covers <sup>*</sup></h1>
-                    <div className=" grid grid-cols-1 sm:grid-cols-3 gap-5 mt-2">
-                        {checkBox1.map((item, index) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-2">
+                        {checkBox1?.map((item, index) => (
                             <label key={index} className=" flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"
@@ -54,7 +49,7 @@ const FormStep2 = (
                 <div className="">
                     <h1 className="text-20 font-medium text-primary">What decisions this report supports <sup>*</sup></h1>
                     <div className=" grid grid-cols-1 sm:grid-cols-3 gap-5 mt-2">
-                        {checkBox2.map((item, index) => (
+                        {checkBox2?.map((item, index) => (
                             <label key={index} className=" flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="checkbox"

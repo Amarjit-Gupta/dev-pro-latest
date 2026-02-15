@@ -1,4 +1,7 @@
-// for test  (8644)
+
+
+// for latest test (9619)
+
 import { useEffect, useState } from "react";
 import FormStep1 from "./steps/FormStep1";
 import FormStep2 from "./steps/FormStep2";
@@ -11,9 +14,6 @@ import FormStep6 from "./steps/FormStep6";
 import { useNavigate, useParams } from "react-router-dom";
 import { base_url } from "../../URL";
 import toast from 'react-hot-toast';
-
-const FORM_STEPS = 6;
-const TOTAL_STEPS = 7;
 
 const MultiStepForm = () => {
 
@@ -28,7 +28,7 @@ const MultiStepForm = () => {
     const [versionNum, setVersionNum] = useState();
     const [versionID, setversionID] = useState("");
 
-    // formstep1 state
+    // formstep1
     const [reportTitle, setReportTitle] = useState("");
     const [subTitle, setSubTitle] = useState("");
     const [industry, setIndustry] = useState("");
@@ -41,18 +41,18 @@ const MultiStepForm = () => {
     const [coveragePeriodFrom, setCoveragePeriodFrom] = useState("");
     const [coveragePeriodTo, setCoveragePeriodTo] = useState("");
 
-    // formstep2 state
+    // formstep2
     const [reportCovers, setReportCovers] = useState([]);
     const [reportSupports, setReportSupports] = useState([]);
 
-    // formstep3 state
+    // formstep3
     const [availableReports, setAvailableReports] = useState("");
     const [uploadedFile, setUploadedFile] = useState(null);
     const [samplePDF, setSamplePDF] = useState(null);
     const [image, setImage] = useState(null);
     const [charts, setCharts] = useState(null);
 
-    // formstep4 state
+    // formstep4
     const [sectionName, setSectionName] = useState("");
     const [sectionGroup, setSectionGroup] = useState("");
     const [shortDescription, setShortDescription] = useState("");
@@ -61,10 +61,10 @@ const MultiStepForm = () => {
     const [fullReport, setFullReport] = useState(null);
     const [sectionPDF, setSectionPDF] = useState(null);
 
-    // formstep5 state
+    // formstep5
     const [reportPrice, setReportPrice] = useState("");
 
-    // formstep6 state
+    // formstep6
     const [status, setStatus] = useState("");
     const [fHomepage, setFHomepage] = useState(null);
     const [seoSlug, setSeoSlug] = useState("");
@@ -72,7 +72,6 @@ const MultiStepForm = () => {
     const [seoKeywords, setSeoKeywords] = useState("");
     const [seoDescription, setSeoDescription] = useState("");
 
-    // for get form data
     const [getIndustry, setGetIndustry] = useState([]);
     const [getSubindustry, setGetSubindustry] = useState([]);
     const [getRegions, setGetRegions] = useState([]);
@@ -83,7 +82,6 @@ const MultiStepForm = () => {
 
     let param = useParams();
     let index = param.id;
-
     const navigate = useNavigate();
 
     const handleRadioChange = async (e) => {
@@ -96,20 +94,14 @@ const MultiStepForm = () => {
                     method: "GET",
                     credentials: "include"
                 });
-
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
-                }
-
                 const data = await res.json();
-
                 if (data) {
                     setReportDirectory(data?.reports);
                 }
             } catch (error) {
                 console.error("API Error:", error);
-                toast.error("Failed to load reports directory");
                 setError(true);
+                toast.error("Failed to load reports directory");
             }
         }
     };
@@ -122,9 +114,7 @@ const MultiStepForm = () => {
                 credentials: "include"
             });
 
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+            if (!res.ok) throw new Error("Failed to fetch report data");
 
             const rData = await res.json();
 
@@ -136,8 +126,8 @@ const MultiStepForm = () => {
             }
         } catch (err) {
             console.error("Report API Error:", err);
-            toast.error("Failed to load report data");
             setError(true);
+            toast.error("Failed to load report data");
         }
     };
 
@@ -158,16 +148,20 @@ const MultiStepForm = () => {
             });
 
             if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
+                console.log("Failed to save step data");
+                toast.error(`Failed to save step ${step} data`);
             }
 
             const data = await res.json();
 
             if (!hasExistingId && data?.report_id) {
                 setDraftId(data.report_id);
+                toast.success(`Step ${step} saved as draft`);
+            } else {
+                toast.success(`Step ${step} updated successfully`);
             }
-            return { success: true, data };
 
+            return { success: true, data };
         } catch (err) {
             console.error("Save Step Error:", err);
             toast.error(`Failed to save step ${step}`);
@@ -225,6 +219,7 @@ const MultiStepForm = () => {
             }
 
             if (formStep === 3) {
+
                 const isEditMode = Boolean(index);
                 if (
                     isEditMode &&
@@ -237,6 +232,7 @@ const MultiStepForm = () => {
                     setFormStep(formStep + 1);
                     return;
                 }
+
                 if (!isEditMode) {
                     if (!availableReports && !uploadedFile) {
                         setError(true);
@@ -251,6 +247,7 @@ const MultiStepForm = () => {
                         return;
                     }
                 }
+
                 if (uploadedFile && uploadedFile.type !== "application/pdf") {
                     setError(true);
                     return;
@@ -297,10 +294,11 @@ const MultiStepForm = () => {
 
                     if (!res.ok) {
                         toast.error("Failed to upload files");
-                        console.log("Upload failed");
+                        return;
                     }
 
                     toast.success("Files uploaded successfully");
+
                 } catch (err) {
                     setError(true);
                     toast.error("Failed to upload files");
@@ -313,6 +311,7 @@ const MultiStepForm = () => {
             }
 
             if (formStep === 5) {
+                // Price validation (uncomment if needed)
                 // if (!reportPrice || isNaN(reportPrice) || Number(reportPrice) <= 0) {
                 //     setError(true);
                 //     return;
@@ -345,7 +344,6 @@ const MultiStepForm = () => {
                 };
 
                 await saveStepData({ step: 5, payload });
-
                 toast.success("Report published successfully!");
                 navigate('/all');
                 return;
@@ -366,7 +364,6 @@ const MultiStepForm = () => {
     const handleSaveDraft = async () => {
         try {
             setIsSubmitting(true);
-
             if (formStep === 1) {
                 const payload = {
                     title: reportTitle || "",
@@ -415,7 +412,7 @@ const MultiStepForm = () => {
                 }
 
                 const data = await res.json();
-               // toast.success("Draft saved successfully!");
+                toast.success("Draft saved successfully!");
 
             } else if (formStep === 5) {
                 const payload = {
@@ -424,6 +421,7 @@ const MultiStepForm = () => {
                     online_viewing_allowed: true
                 };
                 await saveStepData({ step: 4, payload });
+                toast.success("Draft saved successfully!");
             } else if (formStep === 6) {
                 const payload = {
                     status: status || "",
@@ -434,8 +432,8 @@ const MultiStepForm = () => {
                     feature_homepage: fHomepage || false
                 };
                 await saveStepData({ step: 5, payload });
+                toast.success("Draft saved successfully!");
             }
-            toast.success("Draft saved successfully!");
         } catch (err) {
             console.error("Save Draft Error:", err);
             setError(true);
@@ -462,6 +460,7 @@ const MultiStepForm = () => {
             }
 
             let data = await result.json();
+
             if (data) {
                 setGetIndustry(data?.industries || []);
             }
@@ -475,6 +474,7 @@ const MultiStepForm = () => {
         if (!industry) return;
         try {
             const url = `${base_url}/industries/sub?industry=${encodeURIComponent(industry)}`;
+
             const res = await fetch(url);
 
             if (!res.ok) {
@@ -482,6 +482,7 @@ const MultiStepForm = () => {
             }
 
             const data = await res.json();
+
             if (data) {
                 setGetSubindustry(data?.sub_industries || []);
             }
@@ -500,6 +501,7 @@ const MultiStepForm = () => {
             }
 
             let data = await result.json();
+
             if (data) {
                 setGetRegions(data?.regions || []);
             }
@@ -518,6 +520,7 @@ const MultiStepForm = () => {
             }
 
             let data = await result.json();
+
             if (data) {
                 setGetReportTypes(data?.report_types || []);
                 setGetUseCases(data?.use_cases || []);
@@ -538,9 +541,7 @@ const MultiStepForm = () => {
             const regionParam = regions.join(",");
             const url = `${base_url}/countries?region=${encodeURIComponent(regionParam)}`;
             const res = await fetch(url);
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+            if (!res.ok) throw new Error("Failed to fetch countries");
 
             const data = await res.json();
             if (data) {
@@ -558,10 +559,7 @@ const MultiStepForm = () => {
                 method: "GET",
                 credentials: "include"
             });
-
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
+            if (!res.ok) throw new Error("Failed to fetch available reports");
 
             const fData = await res.json();
 
@@ -578,7 +576,6 @@ const MultiStepForm = () => {
         getIndustryData();
         getRegionsData();
         getReportData();
-
     }, []);
 
     useEffect(() => {
@@ -608,7 +605,6 @@ const MultiStepForm = () => {
         }
     }, [selectedReportId]);
 
-    // for edit
     const getReportDataForEdit = async () => {
         try {
             let result = await fetch(`${base_url}/reports/${index}/edit`, {
@@ -836,7 +832,6 @@ const MultiStepForm = () => {
                         />
                     )}
                 </div>
-
                 <div className="relative h-14 rounded w-230 m-auto my-4">
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2">
                         {formStep >= 2 && formStep < 7 && (
@@ -884,7 +879,6 @@ const MultiStepForm = () => {
                                 </button>
                             </>
                         )}
-
                         {formStep === 7 && (
                             <button
                                 className="border px-4 h-9 font-medium text-primary border-text-primary hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { base_url } from "../URL";
 import toast from 'react-hot-toast';
 import { useParams } from "react-router-dom";
+import Footer from "./Footer";
 
 const FilteredUseCases = () => {
 
@@ -145,6 +146,7 @@ const FilteredUseCases = () => {
 
 
     return (
+        <>
         <div className="bg-gray-color">
             <div className=" h-120 flex items-center w-full bg-gray-300"
                 style={{
@@ -262,6 +264,8 @@ const FilteredUseCases = () => {
                 {/* <RelevantReports /> */}
             </div>
         </div>
+        <Footer/>
+        </>
     );
 };
 export default FilteredUseCases;
